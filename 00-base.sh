@@ -5,11 +5,13 @@ DEFAULT_ADMIN_PASSWORD='changeme'
 MY_ORG='Fermilab'
 MY_LOCATION='Batavia'
 MY_DOMAIN='fnal.gov'
+MY_NAME='ECF-SLA'
 
 ############################################################################
 echo "MY_ORG=${MY_ORG}" >  /root/sat-env
 echo "MY_LOCATION=${MY_LOCATION}" >> /root/sat-env
 echo "MY_DOMAIN=${MY_DOMAIN}" >> /root/sat-env
+echo "MY_NAME=${MY_NAME}" >> /root/sat-env
 ############################################################################
 subscription-manager register
 
