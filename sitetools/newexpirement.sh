@@ -62,7 +62,9 @@ for kind in $TYPES; do
         thisrepo=$(hammer content-view list --organization=${MY_ORG} | grep cv-${software}-${NAME_LC} | awk '{print $1}')
         echo $thisrepo >> $TMPFILE
     done
-    repos=$(cat $TMPFILE | tr '\012' ',')
+    thisrepo=$(hammer content-view list --organization=${MY_ORG} | grep cv-puppet-modules | awk '{print $1}')
+    echo $thisrepo >> $TMPFILE
+    repos=$(cat $TMPFILE | grep -e [[:digit:]] | tr '\012' ',' | sed s'/.$//')
     hammer content-view update  --organization=${MY_ORG} --name=ccv-service-${NAME_LC}-${kind} --component-ids=${repos}
 done
 rm ${TMPFILE}
@@ -71,10 +73,10 @@ rm ${TMPFILE}
 for kind in $TYPES; do
     kind_UC=$(echo ${kind} | tr '[:lower:]' '[:upper:]')
     top=$(hammer hostgroup list --organization=${MY_ORG}| grep ${MY_NAME}/${kind_UC} |grep -v "${kind_UC}/" | awk '{print $1}')
-    hammer hostgroup create --organization=${MY_ORG} --parent-id=${top} --content-view=ccv-service-${NAME_LC}-${kind} --name=${NAME_UC}
+    hammer hostgroup create --organizations=${MY_ORG} --parent-id=${top} --content-view=ccv-service-${NAME_LC}-${kind} --name=${NAME_UC}
     containerid=$(hammer hostgroup list --organization=${MY_ORG}| grep ${MY_NAME}/${kind_UC}/${NAME_UC} |grep -v "${NAME_UC}/" | awk '{print $1}')
-    for lc in $(hammer lifecycle-environment list --organization=${MY_ORG} |awk '{print $3}' |grep ${NAME_UC}); do
+    for lc in $(hammer lifecycle-environment list --organization=${MY_ORG} |awk '{print $3}' |grep ${kind_UC}); do
         lc_upper_suffix=$(echo $lc | cut -d'-' -f2 | tr '[:lower:]' '[:upper:]')
-        hammer hostgroup create --organization=${MY_ORG} --parent-id=${containerid} --name=${lc_upper_suffix} --lifecycle-environment=${lc}
+        hammer hostgroup create --organizations=${MY_ORG} --parent-id=${containerid} --name=${lc_upper_suffix} --lifecycle-environment=${lc}
     done
 done
