@@ -83,6 +83,12 @@ for kind in $TYPES; do
         if [[ "${lc_upper_suffix}" == 'PRODUCTION' ]]; then
             hammer activation-key create --organization=${MY_ORG} --unlimited-content-hosts=true --lifecycle-environment=${lc} --content-view=ccv-service-${CUSTOMER_NAME_LC}-${kind} --name=${CUSTOMER_NAME_UC}-${kind_UC}
             hammer activation-key update --organization=${MY_ORG} --name=${CUSTOMER_NAME_UC}-${kind_UC} --auto-attach=false
+
+            # add entries for anything with an Unlimited number of subscriptions
+            for productid in $(hammer subscription list --organization=${MY_ORG} |grep Unlimited | cut -d'|' -f8); do
+                hammer activation-key add-subscription --organization=${MY_ORG} --name=${CUSTOMER_NAME_UC}-${kind_UC} --subscription-id=${productid}
+            done
+
             hammer hostgroup set-parameter --organization=${MY_ORG} --hostgroup=${containerid}/${lc_upper_suffix} --name=kt_activation_keys --value=${CUSTOMER_NAME_UC}-${kind_UC}
         fi
     done
