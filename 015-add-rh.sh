@@ -2,6 +2,11 @@
 
 source /root/sat-env
 
+echo "MAKE SURE YOUR MANIFEST HAS BEEN LOADED ALREADY"
+sleep 3
+
+# Sync up our RH repos
+
 hammer repository-set enable --organization=${MY_ORG} --product='Red Hat Satellite'  --basearch='x86_64' --name='Red Hat Satellite 6.1 (for RHEL 7 Server) (RPMs)'
 
 hammer repository-set enable --organization=${MY_ORG} --product='Red Hat Software Collections for RHEL Server' --basearch='x86_64' --releasever='6Server' --name='Red Hat Software Collections RPMs for Red Hat Enterprise Linux 6 Server'

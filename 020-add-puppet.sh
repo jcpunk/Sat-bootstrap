@@ -2,12 +2,16 @@
 
 source /root/sat-env
 
+# Setup a Puppet product with the Forge for modules
+#  if we are using our own puppet either for non-RHEL (but EL) systems or puppet enterprise
+#   we will need our own clients, setup a place to hand them out
+
 hammer product create --name='Puppet' --organization=${MY_ORG}
 
-hammer content-view create --name=cv-puppet-modules --organization=${MY_ORG}
+hammer content-view create --name=cv-puppet-forge --organization=${MY_ORG}
 hammer content-view create --name=cv-software-puppet-el6 --organization=${MY_ORG}
 hammer content-view create --name=cv-software-puppet-el7 --organization=${MY_ORG}
-hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-puppet-modules
+hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-puppet-forge
 hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-software-puppet-el6
 hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-software-puppet-el7
 hammer repository create --name='Puppetlabs Forge' --organization=${MY_ORG} --product='Puppet' --content-type='puppet' --publish-via-http=true --url=https://forge.puppetlabs.com

@@ -13,6 +13,8 @@ echo "MY_LOCATION=${MY_LOCATION}" >> /root/sat-env
 echo "MY_DOMAIN=${MY_DOMAIN}" >> /root/sat-env
 echo "MY_NAME=${MY_NAME}" >> /root/sat-env
 ############################################################################
+
+# get access to the software we need
 subscription-manager register
 
 subscription-manager refresh
@@ -32,9 +34,12 @@ subscription-manager repos --enable=rhel-ha-for-rhel-7-server-fastrack-rpms
 subscription-manager repos --enable=rhel-ha-for-rhel-7-server-rpms
 subscription-manager repos --enable=rhel-server-rhscl-7-rpms
 
-yum -y install vim-enhanced tuned sos bash-completion
+# load up tools that come in handy
+yum -y install vim-enhanced tuned sos bash-completion openldap-clients openssh-server
 yum -y update
 
+# make sure the "work" zone only listens to our defined services
+# and that it only listens on our listed networks
 for service in $(firewall-cmd --list-all --zone=work |grep services | cut -d ':' -f2); do
     firewall-cmd --permanent --zone=work --remove-service=${service}
 done
@@ -58,20 +63,26 @@ firewall-cmd --permanent --zone=work --add-port="5647/tcp"
 firewall-cmd --permanent --zone=work --add-port="8140/tcp"
 firewall-cmd --complete-reload
 
+# Make sure sshd is running
 systemclt enable sshd.service
+
+# make sure EPEL is not on hand, that messes things up a lot
 yum -y remove epel-release
 yum --enablerepo=* clean all
-yum -y install katello foreman openldap-clients katello-utils puppet
+yum -y install katello foreman katello-utils puppet
 
+# setup a clean CLI config
 mkdir ~/.hammer
 chmod 600 ~/.hammer
 echo ":foreman:" > ~/.hammer/cli_config.yml
-echo "    :host: 'https://ecf-sat6.fnal.gov/'" >> ~/.hammer/cli_config.yml
+echo "    :host: 'https://127.0.0.1/'" >> ~/.hammer/cli_config.yml
 echo "    :username: 'admin'" >> ~/.hammer/cli_config.yml
 echo "    :password: '${DEFAULT_ADMIN_PASSWORD}'" >> ~/.hammer/cli_config.yml
 
-katello-installer --foreman-admin-username admin --foreman-admin-password password
+# Do a mostly default install
+katello-installer --foreman-admin-username admin --foreman-admin-password ${DEFAULT_ADMIN_PASSWORD}
 
+# enable our firewall rules
 firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -o lo -p tcp -m tcp --dport 9200 -m owner --uid-owner foreman -j ACCEPT \
 && firewall-cmd --permanent --direct --add-rule ipv6 filter OUTPUT 0 -o lo -p tcp -m tcp --dport 9200 -m owner --uid-owner foreman -j ACCEPT \
 && firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -o lo -p tcp -m tcp --dport 9200 -m owner --uid-owner root -j ACCEPT \
@@ -86,6 +97,7 @@ echo 'vm.max_map_count = 655300' > /etc/sysctl.d/50-sat6-install.conf
 echo 'fs.aio-max-nr = 59400' >> /etc/sysctl.d/50-sat6-install.conf
 echo "max-connections=1300" >> /etc/qpid/qpidd.conf
 
+# these tunings resulted in meaningful performance gain on a VM...
 echo '.include /lib/systemd/system/qpidd.service' > /etc/systemd/system/qpidd.service
 echo '[Service]' >> /etc/systemd/system/qpidd.service
 echo 'LimitNOFILE=3000' >> /etc/systemd/system/qpidd.service

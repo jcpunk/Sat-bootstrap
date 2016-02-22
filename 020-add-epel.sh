@@ -2,6 +2,8 @@
 
 source /root/sat-env
 
+# EPEL, it needs little introduction
+
 curl https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-5 https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6 https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 > /tmp/epel.pubkey
 hammer gpg create --name="EPEL" --key=/tmp/epel.pubkey  --organization=${MY_ORG}
 

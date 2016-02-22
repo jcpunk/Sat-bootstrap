@@ -2,6 +2,8 @@
 
 source /root/sat-env
 
+# ELRepo is a great source for useful kmods and newer kernels, set it up
+
 curl https://www.elrepo.org/RPM-GPG-KEY-elrepo.org > /tmp/elrepo.pubkey
 hammer gpg create --name="ELRepo" --key=/tmp/elrepo.pubkey  --organization=${MY_ORG}
 

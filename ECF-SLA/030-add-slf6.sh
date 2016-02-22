@@ -2,6 +2,8 @@
 
 source /root/sat-env
 
+# Add the SLF6, but hopefully we are doing the config work in puppet....
+
 hammer product create --gpg-key="Scientific Linux" --name='Scientific Linux Fermi 6' --label='slf6' --organization=${MY_ORG}
 
 hammer content-view create --name=cv-software-slf6 --organization=${MY_ORG}

@@ -2,6 +2,9 @@
 
 source /root/sat-env
 
+# Make our initial lifecycle's
+#  No word on DAQ yet, but the rest feels fairly safe
+
 hammer lifecycle-environment create --name=ANY-DEV --prior='Library' --organization=${MY_ORG}
 hammer lifecycle-environment create --name=ANY-TEST --prior='ANY-DEV' --organization=${MY_ORG}
 hammer lifecycle-environment create --name=ANY-PROD --prior='ANY-TEST' --organization=${MY_ORG}

@@ -2,6 +2,8 @@
 
 source /root/sat-env
 
+# Setup Scientific Linux 7
+
 hammer content-view create --name=cv-software-sl7 --organization=${MY_ORG}
 hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-software-sl7
 

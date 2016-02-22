@@ -2,7 +2,16 @@
 
 source /root/sat-env
 
+# For our setup, every lifecycle also gets access to its own
+#  RPMs repo and puppet modules
+# So make them up
+
+MY_NAME_LC=$(echo ${MY_NAME} | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+
 TYPES="ws svr cr"
+
+hammer content-view create --name=cv-puppet-${MY_NAME_LC} --organization=${MY_ORG}
+hammer content-view publish --async --organization=${MY_ORG} --description=Empty --name=cv-puppet-${MY_NAME_LC}
 
 for kind in ${TYPES}; do
     kind_UC=$(echo ${kind} | tr '[:lower:]' '[:upper:]')
@@ -21,5 +30,4 @@ for kind in ${TYPES}; do
 
     hammer content-view add-repository --organization=${MY_ORG} --product='Host Group Related' --repository="${kind_UC} RPMs - EL6 - x86_64" --name=cv-software-${kind}-el6
     hammer content-view add-repository --organization=${MY_ORG} --product='Host Group Related' --repository="${kind_UC} RPMs - EL7 - x86_64" --name=cv-software-${kind}-el7
-    hammer content-view add-repository --organization=${MY_ORG} --product='Host Group Related' --repository="${kind_UC} Puppet Modules" --name=cv-puppet-${kind}
 done
