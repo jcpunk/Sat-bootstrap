@@ -2,7 +2,7 @@
 
 MY_NETWORKS="2620:006A:0000::/48 2001:0400:2410::/48 131.225.0.0/16"
 DEFAULT_ADMIN_PASSWORD='changeme'
-MY_ORG='Fermilab'
+MY_ORG='ECF-SLA'
 MY_LOCATION='Batavia'
 MY_DOMAIN='fnal.gov'
 MY_NAME='ECF-SLA'
@@ -97,10 +97,11 @@ echo 'vm.max_map_count = 655300' > /etc/sysctl.d/50-sat6-install.conf
 echo 'fs.aio-max-nr = 59400' >> /etc/sysctl.d/50-sat6-install.conf
 echo "max-connections=1300" >> /etc/qpid/qpidd.conf
 
-# these tunings resulted in meaningful performance gain on a VM...
 echo '.include /lib/systemd/system/qpidd.service' > /etc/systemd/system/qpidd.service
 echo '[Service]' >> /etc/systemd/system/qpidd.service
 echo 'LimitNOFILE=3000' >> /etc/systemd/system/qpidd.service
+
+# these tunings resulted in meaningful performance gain on a VM...
 echo 'Nice=1' >> /etc/systemd/system/qpidd.service
 
 echo '.include /usr/lib/systemd/system/foreman-tasks.service' > /etc/systemd/system/foreman-tasks.service
